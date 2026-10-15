@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Spice Route Restaurant</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<style>
+:root{--bg:#fffaf3;--card:#fff;--ink:#2b1d14;--mut:#7a6a5c;--acc:#c0392b;--acc2:#e67e22;--line:#eadfd2;--ok:#2e8b57;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1c1511;--card:#2a201a;--ink:#f6ebdf;--mut:#b5a595;--line:#43362c;color-scheme:dark}}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;font-family:Georgia,'Times New Roman',serif;background:var(--bg);color:var(--ink);line-height:1.5}
+h1,h2,h3{margin:0}
+nav{position:sticky;top:env(safe-area-inset-top,0px);background:var(--ink);color:var(--bg);display:flex;justify-content:space-between;align-items:center;padding:12px 5%;z-index:5;flex-wrap:wrap;gap:8px}
+nav b{font-size:1.2rem}
+nav a{color:var(--bg);text-decoration:none;margin-left:18px;font-family:Arial,sans-serif;font-size:.9rem;cursor:pointer}
+nav a:hover{color:var(--acc2)}
+.hero{text-align:center;padding:80px 5%;background:linear-gradient(135deg,#7b1e12,#c0392b 55%,#e67e22);color:#fff}
+.hero h1{font-size:clamp(2rem,6vw,3.4rem)}
+.hero p{max-width:520px;margin:12px auto 24px;font-size:1.1rem}
+button{font-family:Arial,sans-serif;cursor:pointer;border:0;border-radius:8px;padding:10px 18px;font-size:.95rem;background:var(--acc);color:#fff}
+button:hover{opacity:.9}
+button.alt{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+button.alt.on{background:var(--ink);color:var(--bg)}
+section{padding:56px 5%;max-width:1000px;margin:auto}
+section h2{text-align:center;color:var(--acc);margin-bottom:6px;font-size:1.9rem}
+.sub{text-align:center;color:var(--mut);margin-bottom:24px;font-family:Arial,sans-serif;font-size:.95rem}
+.filters{text-align:center;margin-bottom:22px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+.dish{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;text-align:center;transition:transform .2s}
+.dish:hover{transform:translateY(-4px)}
+.dish .em{font-size:3rem}
+.dish .d{display:none;font-size:.85rem;color:var(--mut);font-family:Arial,sans-serif}
+.dish .p{color:var(--acc);font-weight:bold}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:22px;max-width:620px;margin:auto;font-family:Arial,sans-serif}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px}
+input[type=number]{width:90px;padding:8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);font-size:1rem}
+.bill{margin-top:16px;border-top:2px dashed var(--line);padding-top:12px;display:none}
+.bill .tot{display:flex;justify-content:space-between;background:var(--ok);color:#fff;padding:10px 14px;border-radius:8px;font-weight:bold;margin-top:8px}
+.boxes{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.box{flex:1;min-width:110px;color:#fff;padding:12px;border-radius:8px;text-align:center;font-size:.9rem;display:none}
+.stage{height:210px;position:relative;background:#3a2a20;border-radius:12px;margin-bottom:16px;overflow:hidden}
+.lamp{position:absolute;top:14px;left:50%;width:46px;height:46px;margin-left:-23px;border-radius:50%;background:#ffd36b;box-shadow:0 0 60px 26px #ffd36b88;transition:all .4s}
+.table{position:absolute;bottom:50px;left:50%;width:200px;height:26px;margin-left:-100px;background:#a0522d;border-radius:6px;transition:background .4s}
+.chair{position:absolute;bottom:20px;width:40px;height:40px;border-radius:8px;background:#222e55;transition:all .3s}
+#c1{left:calc(50% - 130px)}#c2{left:calc(50% + 90px)}
+.ctrl{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+footer{background:var(--ink);color:var(--bg);text-align:center;padding:24px;font-family:Arial,sans-serif;font-size:.9rem}
+</style>
+</head>
+<body>
+<nav>
+  <b>🍛 Spice Route</b>
+  <div><a data-go="#menu">Menu</a><a data-go="#order">Order</a><a data-go="#split">Bill Split</a><a data-go="#ambience">Table Setup</a></div>
+</nav>
+
+<div class="hero">
+  <h1>Spice Route Restaurant</h1>
+  <p id="tagline">Authentic South Indian flavours, cooked fresh every day.</p>
+  <button id="heroBtn">Order Now</button>
+</div>
+
+<section id="menu">
+  <h2>Our Menu</h2>
+  <div class="sub">Filter by category, click a dish to see its description.</div>
+  <div class="filters">
+    <button class="alt on" data-f="all">All</button>
+    <button class="alt" data-f="starter">Starters</button>
+    <button class="alt" data-f="main">Mains</button>
+    <button class="alt" data-f="dessert">Desserts</button>
+  </div>
+  <div class="grid">
+    <div class="dish" data-c="starter"><div class="em">🥟</div><h3>Veg Samosa</h3><div class="p">Rs.60</div><div class="d">Crisp pastry filled with spiced potato and peas.</div></div>
+    <div class="dish" data-c="starter"><div class="em">🍗</div><h3>Chicken 65</h3><div class="p">Rs.180</div><div class="d">Spicy deep-fried chicken with curry leaves.</div></div>
+    <div class="dish" data-c="main"><div class="em">🍚</div><h3>Chicken Biryani</h3><div class="p">Rs.250</div><div class="d">Seeraga samba rice slow-cooked with tender chicken.</div></div>
+    <div class="dish" data-c="main"><div class="em">🥘</div><h3>Paneer Butter Masala</h3><div class="p">Rs.220</div><div class="d">Paneer cubes in a rich creamy tomato gravy.</div></div>
+    <div class="dish" data-c="dessert"><div class="em">🍮</div><h3>Gulab Jamun</h3><div class="p">Rs.80</div><div class="d">Soft milk dumplings soaked in rose syrup.</div></div>
+    <div class="dish" data-c="dessert"><div class="em">🍨</div><h3>Kulfi</h3><div class="p">Rs.90</div><div class="d">Traditional dense ice cream with pistachio.</div></div>
+  </div>
+</section>
+
+<section id="order">
+  <h2>Order Food</h2>
+  <div class="sub">Enter the quantity for each dish and place your order.</div>
+  <div class="panel">
+    <div class="row"><label>Veg Samosa (Rs.60)</label><input type="number" min="0" class="qty" data-n="Veg Samosa" data-p="60" value="2"></div>
+    <div class="row"><label>Chicken 65 (Rs.180)</label><input type="number" min="0" class="qty" data-n="Chicken 65" data-p="180" value="1"></div>
+    <div class="row"><label>Chicken Biryani (Rs.250)</label><input type="number" min="0" class="qty" data-n="Chicken Biryani" data-p="250" value="2"></div>
+    <div class="row"><label>Paneer Butter Masala (Rs.220)</label><input type="number" min="0" class="qty" data-n="Paneer Butter Masala" data-p="220" value="1"></div>
+    <div class="row"><label>Gulab Jamun (Rs.80)</label><input type="number" min="0" class="qty" data-n="Gulab Jamun" data-p="80" value="0"></div>
+    <div class="row"><label>Kulfi (Rs.90)</label><input type="number" min="0" class="qty" data-n="Kulfi" data-p="90" value="0"></div>
+    <div style="text-align:center"><button id="placeOrder">Place Order</button></div>
+    <div class="bill" id="bill">
+      <h3 style="text-align:center;color:var(--ok)">Purchase Order Bill!!</h3>
+      <div id="lines"></div>
+      <div class="row"><span>GST (5%)</span><span id="gst"></span></div>
+      <div class="tot"><span>Total Price</span><span id="total"></span></div>
+    </div>
+  </div>
+</section>
+
+<section id="split">
+  <h2>Dining Budget Planner</h2>
+  <div class="sub">Divide your budget by percentage. Percentages must add up to 100.</div>
+  <div class="panel">
+    <div class="row"><label>Amount to manage (Rs.)</label><input type="number" id="amount" value="5000"></div>
+    <div class="row"><label>Food (%)</label><input type="number" class="pc" id="p1" value="60"></div>
+    <div class="row"><label>Drinks (%)</label><input type="number" class="pc" id="p2" value="15"></div>
+    <div class="row"><label>Desserts (%)</label><input type="number" class="pc" id="p3" value="15"></div>
+    <div class="row"><label>Tip (%)</label><input type="number" class="pc" id="p4" value="10"></div>
+    <div style="text-align:center"><button id="evaluate">Evaluate My Money</button></div>
+    <div class="boxes">
+      <div class="box" id="b1" style="background:#1f4fd8"></div>
+      <div class="box" id="b2" style="background:#1e8e3e"></div>
+      <div class="box" id="b3" style="background:#8e44ad"></div>
+      <div class="box" id="b4" style="background:#e91e8c"></div>
+    </div>
+  </div>
+</section>
+
+<section id="ambience">
+  <h2>Table Setup Workshop</h2>
+  <div class="sub">Customise your reserved table: lighting, table colour and chair size.</div>
+  <div class="panel">
+    <div class="stage"><div class="lamp" id="lamp"></div><div class="table" id="table"></div><div class="chair" id="c1"></div><div class="chair" id="c2"></div></div>
+    <div class="ctrl">
+      <button class="alt" id="lampBtn">Change Light Colour</button>
+      <button class="alt" id="tableBtn">Change Table Colour</button>
+      <button class="alt" id="chairUp">Chair Size +</button>
+      <button class="alt" id="chairDown">Chair Size −</button>
+      <button class="alt" id="reset">Reset</button>
+    </div>
+  </div>
+</section>
+
+<footer>Spice Route Restaurant · Open daily 11:00 AM – 11:00 PM · Built with HTML, CSS &amp; jQuery</footer>
+
+<script>
+$(document).ready(function(){
+  // Smooth scrolling
+  function go(t){ $('html,body').animate({scrollTop:$(t).offset().top - 60},600); }
+  $('nav a').click(function(){ go($(this).data('go')); });
+  $('#heroBtn').click(function(){ go('#order'); });
+  $('#tagline').hide().fadeIn(1500);
+
+  // Menu filter + description toggle
+  $('.filters button').click(function(){
+    $('.filters button').removeClass('on'); $(this).addClass('on');
+    var f=$(this).data('f');
+    if(f==='all'){ $('.dish').fadeIn(300); }
+    else{ $('.dish').hide(); $('.dish[data-c="'+f+'"]').fadeIn(300); }
+  });
+  $('.dish').click(function(){ $(this).find('.d').slideToggle(250); });
+
+  // Order calculation
+  $('#placeOrder').click(function(){
+    var sub=0, html='';
+    $('.qty').each(function(){
+      var q=parseInt($(this).val())||0, p=parseInt($(this).data('p'));
+      if(q>0){ sub+=q*p; html+='<div class="row"><span>'+$(this).data('n')+' × '+q+'</span><span>Rs.'+(q*p)+'</span></div>'; }
+    });
+    if(sub===0){ alert('Please enter a quantity for at least one dish.'); return; }
+    var gst=Math.round(sub*0.05);
+    $('#lines').html(html); $('#gst').text('Rs.'+gst); $('#total').text('Rs.'+(sub+gst));
+    $('#bill').slideDown(400);
+  });
+
+  // Budget calculator
+  $('#evaluate').click(function(){
+    var amt=parseFloat($('#amount').val()), ids=['p1','p2','p3','p4'], names=['Food','Drinks','Desserts','Tip'], sum=0, pcs=[];
+    $.each(ids,function(i,id){ var v=parseFloat($('#'+id).val())||0; pcs.push(v); sum+=v; });
+    if(isNaN(amt)||amt<=0){ alert('Please enter a valid amount.'); return; }
+    if(sum!==100){ alert('The amount cannot be divided: percentages add up to '+sum+'%, not 100%.'); $('.box').hide(); return; }
+    $.each(pcs,function(i,p){
+      $('#b'+(i+1)).html(names[i]+'<br>Rs.'+(amt*p/100).toFixed(0)).fadeIn(400);
+    });
+  });
+
+  // Table workshop
+  var lights=['#ffd36b','#ff7b7b','#7bd3ff','#b9ff7b','#e39bff'], tables=['#a0522d','#2e8b57','#1f4fd8','#8e44ad','#444'], li=0, ti=0, size=40;
+  $('#lampBtn').click(function(){ li=(li+1)%lights.length; $('#lamp').css({background:lights[li],boxShadow:'0 0 60px 26px '+lights[li]+'88'}); });
+  $('#tableBtn').click(function(){ ti=(ti+1)%tables.length; $('#table').css('background',tables[ti]); });
+  $('#chairUp').click(function(){ if(size<70){ size+=6; $('.chair').css({width:size,height:size}); } });
+  $('#chairDown').click(function(){ if(size>22){ size-=6; $('.chair').css({width:size,height:size}); } });
+  $('#reset').click(function(){ li=0;ti=0;size=40; $('#lamp').removeAttr('style'); $('#table').removeAttr('style'); $('.chair').removeAttr('style'); });
+});
+</script>
+</body>
+</html>
